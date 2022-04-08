@@ -38,19 +38,19 @@ const puppeteer = require('puppeteer');
 
         images = await page.evaluate(() => {
             let imgElements = document.querySelectorAll('.catalog_block  .image_wrapper_block img'); // получаем каждую картинку
-            //let priceElements = document.querySelectorAll('.catalog_block .item-block .price .price_value'); // получаем каждую цену
+            let priceElements = document.querySelectorAll('.catalog_block .price .price_value'); // получаем каждую цену
 
 
             let products = Object.values(imgElements).map((imgElement, index) => {
-                /*let prices = Object.values(priceElements).map((priceEl)=> { // создаём обьект с ценами
+                let prices = Object.values(priceElements).map((priceEl)=> { // создаём обьект с ценами
                     return {
                         price: priceEl.textContent // содержимое дива
                     }
-                })*/
+                })
                 return {
                     src: imgElement.src,
                     alt: imgElement.alt,
-                    // price: parseInt(Object.values(prices[index])) // Получаем значение у обьекта Цена
+                    price: parseInt(Object.values(prices[index])) // Получаем значение у обьекта Цена
                 }
             })
             return products;
@@ -62,8 +62,9 @@ const puppeteer = require('puppeteer');
         id: index,
         src: obj.src,
         alt: obj.alt,
+        price: obj.price
     }))
-    fs.writeFile('imagesURL.json', JSON.stringify(final, null, ' '), err => { // и ещё выучил метод flat который поднимает навверх
+    fs.writeFile('imagesURL-Absolut.json', JSON.stringify(final, null, ' '), err => { // и ещё выучил метод flat который поднимает навверх
         if (err) return err;
         console.log('images > imagesURL.json');
     })
