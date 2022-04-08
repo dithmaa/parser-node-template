@@ -4,42 +4,42 @@ const puppeteer = require('puppeteer');
 
 
 (async function () {
-    const browser = await puppeteer.launch({ headless: true });
-    const page = await browser.newPage();
-    await page.goto('https://kdvonline.ru/catalog/shokolad-5');
-    await page.waitForSelector('.b3s8K6a5X');
+    const browser = await puppeteer.launch({ headless: true }); // headless: true - без браузера
+    const page = await browser.newPage(); // создать новую страницу в puppeteer
+    await page.goto('https://kdvonline.ru/catalog/shokolad-5'); // ссылка которую нужно парсить
+    await page.waitForSelector('.b3s8K6a5X'); // ждём подгрузки блока где наши продукты из интернет магазина
 
-    await page.setViewport({
+    await page.setViewport({ // открыть окно размером 1500 x 800
         width: 1500,
         height: 800
     });
 
 
-    await page.screenshot({ path: 'screenshot.png' });
-    await page.waitForSelector('.b3s8K6a5X');
+    await page.screenshot({ path: 'screenshot.png' }); // Делает скриншот страницы
+    await page.waitForSelector('.b3s8K6a5X'); // ждём загрузки того же блока что и сверху
 
     let images = await page.evaluate(() => {
-        let imgElements = document.querySelectorAll('.b3s8K6a5X img.mKV5--oM0');
-        let priceElements = document.querySelectorAll('.b3s8K6a5X .b2iP1cx1b');
+        let imgElements = document.querySelectorAll('.b3s8K6a5X img.mKV5--oM0'); // получаем каждую картинку
+        let priceElements = document.querySelectorAll('.b3s8K6a5X .b2iP1cx1b'); // получаем каждую цену
 
         
-        let URLs = Object.values(imgElements).map((imgElement, index) => {
-            let prices = Object.values(priceElements).map((priceEl)=> {
+        let products = Object.values(imgElements).map((imgElement, index) => { 
+            let prices = Object.values(priceElements).map((priceEl)=> { // создаём обьект с ценами
                 return {
-                    price: priceEl.textContent
+                    price: priceEl.textContent // содержимое дива
                 }
             })
             return {
                 id: index,
                 src: imgElement.src,
                 alt: imgElement.alt,
-                price: parseInt(Object.values(prices[index]))
+                price: parseInt(Object.values(prices[index])) // Получаем значение у обьекта Цена
             }
         })
         
         
 
-        return URLs;
+        return products;
     })
     // console.log(images);
     fs.writeFile('imagesURL.json', JSON.stringify(images, null, ' '), err => {
