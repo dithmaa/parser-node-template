@@ -58,7 +58,12 @@ const puppeteer = require('puppeteer');
         finalObj.push(images); // Тут помучался и сделал объединение всех массивов в один
 
     }
-    fs.writeFile('imagesURL.json', JSON.stringify(finalObj.flat(), null, ' '), err => { // и ещё выучил метод flat который поднимает навверх
+    let final = finalObj.flat().map((obj, index)=> ({
+        id: index,
+        src: obj.src,
+        alt: obj.alt,
+    }))
+    fs.writeFile('imagesURL.json', JSON.stringify(final, null, ' '), err => { // и ещё выучил метод flat который поднимает навверх
         if (err) return err;
         console.log('images > imagesURL.json');
     })
